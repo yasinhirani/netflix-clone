@@ -3,11 +3,11 @@ import React from "react";
 const Hero = ({ title, overview, poster }) => {
   return (
     <header
-      className={`h-[90%] w-full bg-contain bg-no-repeat relative`}
+      className={`h-[90%] w-full bg-contain bg-no-repeat relative hero`}
       style={{
         backgroundImage: `url(https://image.tmdb.org/t/p/original/${poster})`,
         backgroundPosition: "center",
-        backgroundSize: "100%",
+        backgroundSize: "cover",
         backgroundColor: 'rgba(0, 0, 0, 1)'
       }}
     >
