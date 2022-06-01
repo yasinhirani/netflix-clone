@@ -6,15 +6,14 @@ import Navbar from "./Navbar";
 import { useAuth0 } from "@auth0/auth0-react";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { db } from "./Firebase";
+import {collection, doc, onSnapshot, setDoc, deleteDoc} from 'firebase/firestore';
 
 const App = () => {
-  const ALL_BOOKMARKED = localStorage.getItem("bookmarked")
-    ? JSON.parse(localStorage.getItem("bookmarked"))
-    : [];
   const [movieList, setMovieList] = useState([]);
   const [tvList, setTvList] = useState([]);
   const [trendingList, setTrendingList] = useState([]);
-  const [bookmarked, setBookmarked] = useState(ALL_BOOKMARKED);
+  const [bookmarked, setBookmarked] = useState([]);
   const [heroBannerList, setHeroBannerList] = useState([]);
   const [tabIndex, setTabIndex] = useState(1);
   const tabs = [
@@ -27,7 +26,7 @@ const App = () => {
       name: "This Week",
     },
   ];
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, user, loginWithRedirect } = useAuth0();
   const toastConfig = {
     position: "top-right",
     autoClose: 3000,
@@ -54,18 +53,6 @@ const App = () => {
     } else {
       console.log("Some error");
     }
-    // axios
-    //   .get(
-    //     `https://api.themoviedb.org/3/movie/popular?api_key=825c0871c8830f0ebc915791cc8d4f0f`
-    //   )
-    //   .then((res) => {
-    //     setMovieList(res.data.results);
-    //     setHeroBannerList(
-    //       res.data.results[
-    //         Math.floor(Math.random() * res.data.results.length - 1)
-    //       ]
-    //     );
-    //   });
   };
   const getPopularTv = async () => {
     const url = `https://api.themoviedb.org/3/tv/popular?api_key=825c0871c8830f0ebc915791cc8d4f0f`;
@@ -76,13 +63,6 @@ const App = () => {
     } else {
       console.log("Some error");
     }
-    // axios
-    //   .get(
-    //     `https://api.themoviedb.org/3/tv/popular?api_key=825c0871c8830f0ebc915791cc8d4f0f`
-    //   )
-    //   .then((res) => {
-    //     setTvList(res.data.results);
-    //   });
   };
 
   const getDetails = async () => {
@@ -95,13 +75,6 @@ const App = () => {
     } else {
       console.log("Some error");
     }
-    // axios
-    //   .get(
-    //     `https://api.themoviedb.org/3/movie/361743?api_key=825c0871c8830f0ebc915791cc8d4f0f`
-    //   )
-    //   .then((res) => {
-    //     setMovieList(res.data.results);
-    //   });
   };
 
   const getTrendingMovies = async (day) => {
@@ -114,52 +87,80 @@ const App = () => {
     } else {
       console.log("Some error");
     }
-    // axios
-    //   .get(
-    //     `https://api.themoviedb.org/3/trending/movie/${day}?api_key=825c0871c8830f0ebc915791cc8d4f0f`
-    //   )
-    //   .then((res) => {
-    //     setTrendingList(res.data.results);
-    //   });
   };
 
-  const bookmark = (id, type, movieId) => {
+  const bookmark = async (id, type, movieId) => {
     console.log(id, type, movieId);
-    const bookmarkList = [...bookmarked];
-    const checkBookmark = () => {
-      let isBookmarked = false;
-      bookmarkList.forEach((bookmark) => {
-        if (bookmark.id === movieId) {
-          isBookmarked = true;
-        }
-      });
-      return isBookmarked;
-    };
+    // const bookmarkList = [...bookmarked];
+    // const checkBookmark = () => {
+    //   let isBookmarked = false;
+    //   bookmarkList.forEach((bookmark) => {
+    //     if (bookmark.id === movieId) {
+    //       isBookmarked = true;
+    //     }
+    //   });
+    //   return isBookmarked;
+    // };
     if (isAuthenticated) {
-      const checkIsBookmarked = checkBookmark();
-      !checkIsBookmarked
-        ? setBookmarked((prev) => {
-            return [
-              ...prev,
-              type === "movie"
-                ? movieList[id]
-                : type === "tv"
-                ? tvList[id]
-                : trendingList[id],
-            ];
-          })
-        : toast.info('Already Bookmarked', toastConfig);
+      // const checkIsBookmarked = checkBookmark();
+      // !checkIsBookmarked
+      //   ? setBookmarked((prev) => {
+      //       return [
+      //         ...prev,
+      //         type === "movie"
+      //           ? movieList[id]
+      //           : type === "tv"
+      //           ? tvList[id]
+      //           : trendingList[id],
+      //       ];
+      //     })
+      //   : toast.info('Already Bookmarked', toastConfig);
+      if (type === "movie") {
+        const docData = {
+          title: movieList[id].title,
+          poster_path: movieList[id].poster_path,
+          release_date: movieList[id].release_date
+        };
+        const postRef = doc(db, user.nickname, docData.title);
+          await setDoc(postRef, docData)
+          console.log(docData.title, docData.poster_path, docData.release_date);
+          toast.success('Bookmarked Successfully', toastConfig);
+      }
+      else if (type === "tv") {
+        const docData = {
+          title: tvList[id].original_name,
+          poster_path: tvList[id].poster_path,
+          release_date: tvList[id].first_air_date
+        };
+        const postRef = doc(db, user.nickname, docData.title);
+          await setDoc(postRef, docData)
+          console.log(docData.title, docData.poster_path, docData.release_date);
+          toast.success('Bookmarked Successfully', toastConfig);
+      }
+      else {
+        const docData = {
+          title: trendingList[id].title,
+          poster_path: trendingList[id].poster_path,
+          release_date: trendingList[id].release_date
+        };
+        const postRef = doc(db, user.nickname, docData.title);
+          await setDoc(postRef, docData)
+          console.log(docData.title, docData.poster_path, docData.release_date);
+          toast.success('Bookmarked Successfully', toastConfig);
+      }
     } else {
-      toast.error('Please login to Bookmark', toastConfig);
+      loginWithRedirect();
     }
     console.log(bookmarked);
   };
 
-  const unbookmark = (id) => {
-    const bookmarkList = [...bookmarked];
-    bookmarkList.splice(id, 1);
-    setBookmarked(bookmarkList);
-    console.log(id, bookmarked.length);
+  const unbookmark = async (id, title) => {
+    // const bookmarkList = [...bookmarked];
+    // bookmarkList.splice(id, 1);
+    // setBookmarked(bookmarkList);
+    // console.log(id, bookmarked.length);
+    await deleteDoc(doc(db, user.nickname, title));
+    toast.success('Removed Successfully', toastConfig);
   };
 
   const handleTabClick = (tabindex, tabname) => {
@@ -172,8 +173,13 @@ const App = () => {
     }, 2000);
   };
   useEffect(() => {
-    localStorage.setItem("bookmarked", JSON.stringify(bookmarked));
-  }, [bookmarked]);
+    if (isAuthenticated) {
+      onSnapshot(collection(db, user.nickname), (snapshot) => {
+        setBookmarked(snapshot.docs.map((doc) => doc.data()))
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   useEffect(() => {
     getPopularMovies();
@@ -283,7 +289,7 @@ const App = () => {
             </div>
           ) : (
             <div className="w-full h-80 flex justify-center items-center">
-              <div class="lds-ellipsis">
+              <div className="lds-ellipsis">
                 <div></div>
                 <div></div>
                 <div></div>

@@ -43,7 +43,7 @@ const Card = ({
           </button>
         )}
         {type === 'bookmarked' && (
-          <button className="bg-black bg-opacity-30 p-1.5 text-white rounded-full absolute right-2 top-2 z-10" onClick={()=>unbookmark(bookmarkid)}>
+          <button className="bg-black bg-opacity-30 p-1.5 text-white rounded-full absolute right-2 top-2 z-10" onClick={()=>unbookmark(bookmarkid, title)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className={`w-4 transform rotate-45`}
