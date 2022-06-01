@@ -15,6 +15,7 @@ const Card = ({
   bookmark,
   unbookmark,
   getDetails,
+  media_type,
 }) => {
   // const [bookmarked, setBookmarked] = useState(false);
   return (
@@ -63,7 +64,7 @@ const Card = ({
           </button>
         )}
         <figure className="movie_image relative overflow-hidden rounded-lg">
-          <Link to={`/details/${type}/${id}`}><img
+          <Link to={`/details/${type === 'trending' ? media_type : type}/${id}`}><img
             className="w-full h-full"
             src={`https://image.tmdb.org/t/p/w220_and_h330_face/${poster_path}`}
             alt=""
