@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 // import YouTube from "react-youtube";
 
 const Card = ({
@@ -13,6 +14,7 @@ const Card = ({
   original_name,
   bookmark,
   unbookmark,
+  getDetails,
 }) => {
   // const [bookmarked, setBookmarked] = useState(false);
   return (
@@ -61,11 +63,11 @@ const Card = ({
           </button>
         )}
         <figure className="movie_image relative overflow-hidden rounded-lg">
-          <img
+          <Link to={`/details/${type}/${id}`}><img
             className="w-full h-full"
             src={`https://image.tmdb.org/t/p/w220_and_h330_face/${poster_path}`}
             alt=""
-          />
+          /></Link>
         </figure>
         <div className="flex flex-col p-2 space-y-1 text-white">
           <p className="font-bold">{title || original_name}</p>
