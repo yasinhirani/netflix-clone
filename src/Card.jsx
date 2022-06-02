@@ -10,6 +10,7 @@ const Card = ({
   poster_path,
   release_date,
   type,
+  isBookmarked,
   first_air_date,
   original_name,
   bookmark,
@@ -21,7 +22,7 @@ const Card = ({
   return (
     <div>
       <div key={bookmarkid} className="w-56 relative flex-shrink-0 hero">
-        {type !== 'bookmarked' && (
+        {isBookmarked !== 'bookmarked' && (
           <button
             onClick={() => {
               bookmark(bookmarkid, type, id);
@@ -45,7 +46,7 @@ const Card = ({
             </svg>
           </button>
         )}
-        {type === 'bookmarked' && (
+        {isBookmarked === 'bookmarked' && (
           <button className="bg-black bg-opacity-30 p-1.5 text-white rounded-full absolute right-2 top-2 z-10" onClick={()=>unbookmark(bookmarkid, title)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
