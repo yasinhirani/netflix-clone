@@ -67,7 +67,7 @@ const Card = ({
         <figure className="movie_image relative overflow-hidden rounded-lg">
           <Link to={`/details/${type === 'trending' ? media_type : type}/${id}`}><img
             className="w-full h-full"
-            src={`https://image.tmdb.org/t/p/w220_and_h330_face/${poster_path}`}
+            src={`https://image.tmdb.org/t/p/original/${poster_path}`}
             alt=""
           /></Link>
         </figure>
