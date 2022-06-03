@@ -13,6 +13,8 @@ import {
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
+import movieTrailer from "movie-trailer";
+import ReactPlayer from "react-player";
 
 const Home = () => {
   const [movieList, setMovieList] = useState([]);
@@ -21,6 +23,8 @@ const Home = () => {
   const [bookmarked, setBookmarked] = useState([]);
   const [heroBannerList, setHeroBannerList] = useState([]);
   const [tabIndex, setTabIndex] = useState(1);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [mediatype, setMediaType] = useState('');
   const tabs = [
     {
       index: 1,
@@ -150,6 +154,17 @@ const Home = () => {
     toast.success("Removed Successfully", toastConfig);
   };
 
+  const playVideo = (name, type) => {
+    setYoutubeUrl('');
+    console.log(name, type);
+    movieTrailer(name).then((url) => {
+      const urlParams = new URLSearchParams(new URL(url).search);
+      setYoutubeUrl(urlParams.get('v'));
+      setMediaType(type);
+      console.log(urlParams.get('v'));
+    })
+  }
+
   const handleTabClick = (tabindex, tabname) => {
     setTabIndex(tabindex);
     setTrendingList([]);
@@ -195,10 +210,12 @@ const Home = () => {
                 {...list}
                 bookmark={bookmark}
                 type={"movie"}
+                playVideo={playVideo}
               />
             );
           })}
         </div>
+        {youtubeUrl && mediatype === 'movie' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
       </div>
       {/* Popular TV */}
       <div className="px-6 md:px-12 pt-6">
@@ -206,10 +223,11 @@ const Home = () => {
         <div className="w-full flex space-x-10 overflow-x-auto slider">
           {tvList.map((list, id) => {
             return (
-              <Card bookmarkid={id} {...list} bookmark={bookmark} type={"tv"} />
+              <Card bookmarkid={id} {...list} bookmark={bookmark} type={"tv"} playVideo={playVideo} />
             );
           })}
         </div>
+        {youtubeUrl && mediatype === 'tv' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
       </div>
       {/* Bookmarked */}
       {bookmarked.length > 0 && isAuthenticated && (
@@ -224,10 +242,12 @@ const Home = () => {
                     bookmarkid={id}
                     unbookmark={unbookmark}
                     isBookmarked={"bookmarked"}
+                    playVideo={playVideo}
                   />
                 );
               })}
           </div>
+          {youtubeUrl && mediatype === 'bookmarked' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
         </div>
       )}
       {/* Trending */}
@@ -260,6 +280,7 @@ const Home = () => {
                   {...list}
                   bookmark={bookmark}
                   type={"trending"}
+                  playVideo={playVideo}
                 />
               );
             })}
@@ -274,6 +295,7 @@ const Home = () => {
             </div>
           </div>
         )}
+        {youtubeUrl && mediatype === 'trending' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
       </div>
       <ToastContainer />
     </div>

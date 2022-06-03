@@ -25,6 +25,9 @@ const Details = () => {
     release_date,
     runtime,
     vote_average,
+    first_air_date,
+    original_name,
+    episode_run_time,
   } = details;
 
   useEffect(() => {
@@ -44,13 +47,13 @@ const Details = () => {
           </figure>
           <div className="text-white">
             <div className="flex flex-col space-y-4">
-              <h1 className="text-6xl">{title}</h1>
+              <h1 className="text-6xl">{title || original_name}</h1>
               <p>{tagline}</p>
               <p className="flex items-center space-x-4">
                 <span>{`${vote_average}`}</span> <span>/</span>
-                <span>{runtime}</span>
+                <span>{runtime || (episode_run_time && episode_run_time[0])}</span>
                 <span>/</span>
-                <span>{release_date}</span>
+                <span>{release_date || first_air_date}</span>
               </p>
             </div>
             <div className="mt-10">
