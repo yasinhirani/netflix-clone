@@ -11,7 +11,7 @@ const Details = () => {
     const data = await res.json();
     if (res.ok) {
       setDetails(data);
-      console.log(data, type);
+      // console.log(data, type);
     } else {
       console.log("Some error");
     }

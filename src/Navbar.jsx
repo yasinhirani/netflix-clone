@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const {loginWithRedirect, isAuthenticated, logout, user} = useAuth0();
-  console.log(user);
+  // console.log(user);
     return (
         <nav className="flex justify-between items-center px-6 md:px-12 py-4 shadow">
         {/* <h1 className="text-2xl text-red-600 tracking-wide">Netflix</h1> */}

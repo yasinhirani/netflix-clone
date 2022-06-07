@@ -7,7 +7,7 @@ import Navbar from "./Navbar";
 
 const App = () => {
   return(
-    <div className="bg-[#111] h-full flex flex-col overflow-hidden">
+    <div className="bg-[#111] h-full flex flex-col overflow-hidden relative">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

@@ -25,6 +25,7 @@ const Home = () => {
   const [tabIndex, setTabIndex] = useState(1);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [mediatype, setMediaType] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
   const tabs = [
     {
       index: 1,
@@ -52,13 +53,13 @@ const Home = () => {
     const data = await res.json();
     if (res.ok) {
       setMovieList(data.results);
-      console.log(data.results);
+      // console.log(data.results);
       setHeroBannerList(
         data.results[Math.floor(Math.random() * data.results.length - 1)]
       );
-      console.log(
-        data.results[Math.floor(Math.random() * data.results.length - 1)]
-      );
+      // console.log(
+      //   data.results[Math.floor(Math.random() * data.results.length - 1)]
+      // );
     } else {
       console.log("Some error");
     }
@@ -80,7 +81,7 @@ const Home = () => {
     const data = await res.json();
     if (res.ok) {
       setTrendingList(data.results);
-      console.log(data.results);
+      // console.log(data.results);
     } else {
       console.log("Some error");
     }
@@ -113,7 +114,7 @@ const Home = () => {
           };
           const postRef = doc(db, user.nickname, docData.title);
           await setDoc(postRef, docData);
-          console.log(docData.title, docData.poster_path, docData.release_date);
+          // console.log(docData.title, docData.poster_path, docData.release_date);
           toast.success("Bookmarked Successfully", toastConfig);
         } else if (type === "tv") {
           const docData = {
@@ -125,7 +126,7 @@ const Home = () => {
           };
           const postRef = doc(db, user.nickname, docData.title);
           await setDoc(postRef, docData);
-          console.log(docData.title, docData.poster_path, docData.release_date);
+          // console.log(docData.title, docData.poster_path, docData.release_date);
           toast.success("Bookmarked Successfully", toastConfig);
         } else {
           const docData = {
@@ -137,7 +138,7 @@ const Home = () => {
           };
           const postRef = doc(db, user.nickname, docData.title);
           await setDoc(postRef, docData);
-          console.log(docData.title, docData.poster_path, docData.release_date);
+          // console.log(docData.title, docData.poster_path, docData.release_date);
           toast.success("Bookmarked Successfully", toastConfig);
         }
       } else {
@@ -156,12 +157,13 @@ const Home = () => {
 
   const playVideo = (name, type) => {
     setYoutubeUrl('');
-    console.log(name, type);
+    // console.log(name, type);
     movieTrailer(name).then((url) => {
       const urlParams = new URLSearchParams(new URL(url).search);
       setYoutubeUrl(urlParams.get('v'));
       setMediaType(type);
-      console.log(urlParams.get('v'));
+      setIsPlaying(true);
+      // console.log(urlParams.get('v'));
     })
   }
 
@@ -192,6 +194,7 @@ const Home = () => {
   return (
     <div className="flex-grow overflow-y-auto">
       {/* Hero */}
+      {isPlaying && <button onClick={()=>{setIsPlaying(false); setYoutubeUrl('')}} className="bg-black absolute inset-0 bg-opacity-50 z-20"></button>}
       <Hero
         title={heroBannerList.title}
         overview={heroBannerList.overview}
@@ -215,7 +218,7 @@ const Home = () => {
             );
           })}
         </div>
-        {youtubeUrl && mediatype === 'movie' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+        {youtubeUrl && mediatype === 'movie' && <ReactPlayer className="player" url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'92%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
       </div>
       {/* Popular TV */}
       <div className="px-6 md:px-12 pt-6">
@@ -227,7 +230,7 @@ const Home = () => {
             );
           })}
         </div>
-        {youtubeUrl && mediatype === 'tv' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+        {youtubeUrl && mediatype === 'tv' && <ReactPlayer className="player" url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'92%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
       </div>
       {/* Bookmarked */}
       {bookmarked.length > 0 && isAuthenticated && (
@@ -247,7 +250,7 @@ const Home = () => {
                 );
               })}
           </div>
-          {youtubeUrl && mediatype === 'bookmarked' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+          {youtubeUrl && mediatype === 'bookmarked' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
         </div>
       )}
       {/* Trending */}
@@ -295,7 +298,7 @@ const Home = () => {
             </div>
           </div>
         )}
-        {youtubeUrl && mediatype === 'trending' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'400px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+        {youtubeUrl && mediatype === 'trending' && <ReactPlayer className="player" url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'92%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
       </div>
       <ToastContainer />
     </div>
