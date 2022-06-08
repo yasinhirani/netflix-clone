@@ -21,8 +21,8 @@ const Card = ({
 }) => {
   // const [bookmarked, setBookmarked] = useState(false);
   return (
-    <div>
-      <div key={bookmarkid} className="w-56 relative flex-shrink-0 hero">
+    <div key={bookmarkid}>
+      <div className="w-56 relative flex-shrink-0 hero">
         {isBookmarked !== "bookmarked" && (
           <button
             onClick={() => {
@@ -91,7 +91,7 @@ const Card = ({
           >
             <img
               className="w-full h-full"
-              src={`https://image.tmdb.org/t/p/original/${poster_path}`}
+              src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
               alt=""
               loading="lazy"
             />

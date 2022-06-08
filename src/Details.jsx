@@ -6,7 +6,7 @@ const Details = () => {
   const [details, setDetails] = useState({});
 
   const getDetails = async () => {
-    const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=825c0871c8830f0ebc915791cc8d4f0f`;
+    const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
     if (res.ok) {

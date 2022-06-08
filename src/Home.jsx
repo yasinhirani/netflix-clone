@@ -48,7 +48,7 @@ const Home = () => {
   };
 
   const getPopularMovies = async () => {
-    const url = `https://api.themoviedb.org/3/movie/popular?api_key=825c0871c8830f0ebc915791cc8d4f0f`;
+    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
     if (res.ok) {
@@ -65,7 +65,7 @@ const Home = () => {
     }
   };
   const getPopularTv = async () => {
-    const url = `https://api.themoviedb.org/3/tv/popular?api_key=825c0871c8830f0ebc915791cc8d4f0f`;
+    const url = `https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
     if (res.ok) {
@@ -76,7 +76,7 @@ const Home = () => {
   };
 
   const getTrendingMovies = async (day) => {
-    const url = `https://api.themoviedb.org/3/trending/movie/${day}?api_key=825c0871c8830f0ebc915791cc8d4f0f`;
+    const url = `https://api.themoviedb.org/3/trending/movie/${day}?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
     if (res.ok) {
@@ -159,8 +159,7 @@ const Home = () => {
     setYoutubeUrl('');
     // console.log(name, type);
     movieTrailer(name).then((url) => {
-      const urlParams = new URLSearchParams(new URL(url).search);
-      setYoutubeUrl(urlParams.get('v'));
+      setYoutubeUrl(url);
       setMediaType(type);
       setIsPlaying(true);
       // console.log(urlParams.get('v'));
