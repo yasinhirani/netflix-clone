@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import movieTrailer from "movie-trailer";
 import ReactPlayer from "react-player";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [movieList, setMovieList] = useState([]);
@@ -23,8 +24,8 @@ const Home = () => {
   const [bookmarked, setBookmarked] = useState([]);
   const [heroBannerList, setHeroBannerList] = useState([]);
   const [tabIndex, setTabIndex] = useState(1);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [mediatype, setMediaType] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [mediatype, setMediaType] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const tabs = [
     {
@@ -48,12 +49,12 @@ const Home = () => {
   };
 
   const getPopularMovies = async () => {
-    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}&sort_by=popularity.desc&certification_country=IN&with_original_language=hi&page=1`;
     const res = await fetch(url);
     const data = await res.json();
     if (res.ok) {
       setMovieList(data.results);
-      // console.log(data.results);
+      console.log(data);
       setHeroBannerList(
         data.results[Math.floor(Math.random() * data.results.length - 1)]
       );
@@ -65,11 +66,12 @@ const Home = () => {
     }
   };
   const getPopularTv = async () => {
-    const url = `https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
+    const url = `https://api.themoviedb.org/3/discover/tv?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}&sort_by=popularity.desc&certification_country=IN&with_original_language=hi`;
     const res = await fetch(url);
     const data = await res.json();
     if (res.ok) {
       setTvList(data.results);
+      console.log(data);
     } else {
       console.log("Some error");
     }
@@ -119,7 +121,7 @@ const Home = () => {
         } else if (type === "tv") {
           const docData = {
             id: tvList[id].id,
-            title: tvList[id].original_name,
+            title: tvList[id].name,
             poster_path: tvList[id].poster_path,
             release_date: tvList[id].first_air_date,
             type: "tv",
@@ -155,16 +157,28 @@ const Home = () => {
     toast.success("Removed Successfully", toastConfig);
   };
 
-  const playVideo = (name, type) => {
-    setYoutubeUrl('');
-    // console.log(name, type);
-    movieTrailer(name).then((url) => {
-      setYoutubeUrl(url);
-      setMediaType(type);
-      setIsPlaying(true);
-      // console.log(urlParams.get('v'));
-    })
-  }
+  const playVideo = async (name, type, id) => {
+    setYoutubeUrl("");
+    if (type === "tv") {
+      const url = `https://api.themoviedb.org/3/tv/${id}/videos?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (res.ok) {
+        console.log(data.results[0]);
+        setYoutubeUrl(data.results[0].key);
+        setMediaType(type);
+        setIsPlaying(true);
+      } else {
+        console.log("Some error");
+      }
+    } else {
+      movieTrailer(name).then((url) => {
+        setYoutubeUrl(url);
+        setMediaType(type);
+        setIsPlaying(true);
+      });
+    }
+  };
 
   const handleTabClick = (tabindex, tabname) => {
     setTabIndex(tabindex);
@@ -193,17 +207,26 @@ const Home = () => {
   return (
     <div className="flex-grow overflow-y-auto">
       {/* Hero */}
-      {isPlaying && <button onClick={()=>{setIsPlaying(false); setYoutubeUrl('')}} className="bg-black absolute inset-0 bg-opacity-50 z-20"></button>}
+      {isPlaying && (
+        <button
+          onClick={() => {
+            setIsPlaying(false);
+            setYoutubeUrl("");
+          }}
+          className="bg-black absolute inset-0 bg-opacity-50 z-20"
+        ></button>
+      )}
       <Hero
         title={heroBannerList.title}
         overview={heroBannerList.overview}
-        poster={heroBannerList.poster_path}
+        poster={heroBannerList.backdrop_path}
       />
       {/* Popular Movies */}
       <div className="px-6 md:px-12 pt-6">
-        <h2 className="font-semibold mb-4 text-2xl text-white">
-          Popular Movies
-        </h2>
+        <div className="flex justify-between items-center text-white">
+          <h2 className="font-semibold mb-4 text-2xl">Popular Movies</h2>
+          <Link to={"/allMovies"}>see all</Link>
+        </div>
         <div className="w-full flex space-x-10 overflow-x-auto slider">
           {movieList.map((list, id) => {
             return (
@@ -217,19 +240,46 @@ const Home = () => {
             );
           })}
         </div>
-        {youtubeUrl && mediatype === 'movie' && <ReactPlayer className="player" url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'92%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+        {youtubeUrl && mediatype === "movie" && (
+          <ReactPlayer
+            className="player"
+            url={`https://www.youtube.com/watch?v=${youtubeUrl}`}
+            width={"92%"}
+            height={"500px"}
+            controls={true}
+            onEnded={() => setYoutubeUrl("")}
+          />
+        )}
       </div>
       {/* Popular TV */}
       <div className="px-6 md:px-12 pt-6">
-        <h2 className="font-semibold mb-4 text-2xl text-white">Popular TV</h2>
+        <div className="flex justify-between items-center text-white">
+          <h2 className="font-semibold mb-4 text-2xl">Popular Tv</h2>
+          <Link to={"/allTv"}>see all</Link>
+        </div>
         <div className="w-full flex space-x-10 overflow-x-auto slider">
           {tvList.map((list, id) => {
             return (
-              <Card bookmarkid={id} {...list} bookmark={bookmark} type={"tv"} playVideo={playVideo} />
+              <Card
+                bookmarkid={id}
+                {...list}
+                bookmark={bookmark}
+                type={"tv"}
+                playVideo={playVideo}
+              />
             );
           })}
         </div>
-        {youtubeUrl && mediatype === 'tv' && <ReactPlayer className="player" url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'92%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+        {youtubeUrl && mediatype === "tv" && (
+          <ReactPlayer
+            className="player"
+            url={`https://www.youtube.com/watch?v=${youtubeUrl}`}
+            width={"92%"}
+            height={"500px"}
+            controls={true}
+            onEnded={() => setYoutubeUrl("")}
+          />
+        )}
       </div>
       {/* Bookmarked */}
       {bookmarked.length > 0 && isAuthenticated && (
@@ -249,7 +299,15 @@ const Home = () => {
                 );
               })}
           </div>
-          {youtubeUrl && mediatype === 'bookmarked' && <ReactPlayer url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'100%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+          {youtubeUrl && mediatype === "bookmarked" && (
+            <ReactPlayer
+              url={`https://www.youtube.com/watch?v=${youtubeUrl}`}
+              width={"100%"}
+              height={"500px"}
+              controls={true}
+              onEnded={() => setYoutubeUrl("")}
+            />
+          )}
         </div>
       )}
       {/* Trending */}
@@ -297,7 +355,16 @@ const Home = () => {
             </div>
           </div>
         )}
-        {youtubeUrl && mediatype === 'trending' && <ReactPlayer className="player" url={`https://www.youtube.com/watch?v=${youtubeUrl}`} width={'92%'} height={'500px'} controls={true} onEnded={()=>setYoutubeUrl('')} />}
+        {youtubeUrl && mediatype === "trending" && (
+          <ReactPlayer
+            className="player"
+            url={`https://www.youtube.com/watch?v=${youtubeUrl}`}
+            width={"92%"}
+            height={"500px"}
+            controls={true}
+            onEnded={() => setYoutubeUrl("")}
+          />
+        )}
       </div>
       <ToastContainer />
     </div>

@@ -3,9 +3,13 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
-        'sm' : 'repeat(1, minmax(0, max-content))',
-        'md' : 'repeat(2, minmax(0, max-content))',
-        'lg' : 'repeat(3, minmax(0, max-content))',
+        'sm' : 'repeat(2, minmax(0, max-content))',
+        'md' : 'repeat(3, minmax(0, max-content))',
+        'lg' : 'repeat(4, minmax(0, max-content))',
+        'xl' : 'repeat(6, minmax(0, max-content))',
+      },
+      screens: {
+        'xs': '450px'
       }
     },
   },
