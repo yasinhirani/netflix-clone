@@ -165,17 +165,26 @@ const Home = () => {
       const data = await res.json();
       if (res.ok) {
         console.log(data.results[0]);
-        setYoutubeUrl(data.results[0].key);
-        setMediaType(type);
-        setIsPlaying(true);
+        if (!data.results[0]) {
+          toast.error("Video not found", toastConfig);
+        } else {
+          setYoutubeUrl(data.results[0].key);
+          setMediaType(type);
+          setIsPlaying(true);
+        }
       } else {
         console.log("Some error");
       }
     } else {
       movieTrailer(name).then((url) => {
-        setYoutubeUrl(url);
-        setMediaType(type);
-        setIsPlaying(true);
+        if (url) {
+          setYoutubeUrl(url);
+          setMediaType(type);
+          setIsPlaying(true);
+        } else {
+          toast.error("Video not found", toastConfig);
+          setIsPlaying(false);
+        }
       });
     }
   };
