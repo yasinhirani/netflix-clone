@@ -111,3 +111,11 @@ html, body, #root{
   font-size: 12px;
   background-color: #111;
 }
+
+.hero__title{
+  text-shadow: 1px 1px 4px gray;
+}
+
+.hero__overview{
+  text-shadow: 1px 1px 4px black;
+}

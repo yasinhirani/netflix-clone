@@ -55,8 +55,9 @@ const Home = () => {
     if (res.ok) {
       setMovieList(data.results);
       console.log(data);
+      let randomMovie = Math.floor(Math.random() * data.results.length - 1);
       setHeroBannerList(
-        data.results[Math.floor(Math.random() * data.results.length - 1)]
+        data.results[randomMovie]
       );
       // console.log(
       //   data.results[Math.floor(Math.random() * data.results.length - 1)]
@@ -226,9 +227,11 @@ const Home = () => {
         ></button>
       )}
       <Hero
+        id={heroBannerList.id}
         title={heroBannerList.title}
         overview={heroBannerList.overview}
         poster={heroBannerList.backdrop_path}
+        playVideo={playVideo}
       />
       {/* Popular Movies */}
       <div className="px-6 md:px-12 pt-6">
