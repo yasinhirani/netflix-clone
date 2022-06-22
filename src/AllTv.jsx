@@ -7,6 +7,7 @@ import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactPlayer from "react-player";
+import { debounce } from "lodash";
 
 const AllTv = () => {
   const [tvList, setTvList] = useState([]);
@@ -29,6 +30,17 @@ const AllTv = () => {
     draggable: true,
     theme: "colored",
   };
+
+  const searchValue = debounce((value) => {
+    const trimmedValue = value.trim();
+    if (trimmedValue.length > 0) {
+      searchTvResult(trimmedValue);
+    }
+    if (trimmedValue.length === 0) {
+      setPageLength(2);
+      getPopularTv();
+    }
+  }, 750);
 
   const getPopularTv = async () => {
     const url = `https://api.themoviedb.org/3/discover/tv?api_key=${
@@ -56,6 +68,20 @@ const AllTv = () => {
       });
       setdataLength(dataLength + 20);
       console.log(data);
+    } else {
+      console.log("Some error");
+    }
+  };
+
+  const searchTvResult = async (movieName) => {
+    setTvList([]);
+    const url = `https://api.themoviedb.org/3/search/tv?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}&query=${movieName}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (res.ok) {
+      setTvList(data.results);
+      seTvDataLength(data.results.length);
+      console.log(data.results);
     } else {
       console.log("Some error");
     }
@@ -138,11 +164,30 @@ const AllTv = () => {
           className="bg-black absolute inset-0 bg-opacity-50 z-20"
         ></button>
       )}
-      <div className="px-6 md:px-12 pt-6">
-        <h2 className="font-semibold mb-4 text-2xl text-white">
-          Popular Movies
-        </h2>
-        <div className="w-full">
+      <div className="px-6 md:px-12 py-6">
+      <div className="flex flex-col xs:flex-row justify-between sm:items-center">
+          <h2 className="font-semibold mb-4 text-2xl text-white">
+            Popular Tv
+          </h2>
+          <div className="relative">
+            <input
+              className="search-input border border-white bg-transparent placeholder-white text-white outline-none px-2 py-2 text-sm rounded w-full xs:w-auto"
+              autoComplete="off"
+              type="text"
+              name=""
+              id="searchMovie"
+              required
+              onChange={(e) => searchValue(e.target.value)}
+            />
+            <label
+              className="search-label text-white absolute top-1.5 left-3 transition-all"
+              htmlFor="searchMovie"
+            >
+              search
+            </label>
+          </div>
+        </div>
+        <div className="w-full mt-5">
           <InfiniteScroll
             scrollableTarget="scrollableDiv"
             className="w-full grid grid-cols-sm sm:grid-cols-md lg:grid-cols-lg xl:grid-cols-xl gap-6 xs:gap-10 justify-center"

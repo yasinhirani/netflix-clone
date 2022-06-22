@@ -96,3 +96,18 @@ html, body, #root{
   transform: translate(-50%, -50%);
   z-index: 20;
 }
+
+.search-input:focus ~ .search-label{
+  top: -10px;
+  left: 14px;
+  font-size: 12px;
+  padding: 0 5px;
+  background-color: #111;
+}
+.search-input:valid ~ .search-label{
+  top: -10px;
+  left: 14px;
+  padding: 0 5px;
+  font-size: 12px;
+  background-color: #111;
+}

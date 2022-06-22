@@ -5,14 +5,10 @@ import movieTrailer from "movie-trailer";
 import ReactPlayer from "react-player";
 import { useAuth0 } from "@auth0/auth0-react";
 import { db } from "./Firebase";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  setDoc,
-} from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { debounce } from "lodash";
 
 const AllMovies = () => {
   const [movieList, setMovieList] = useState([]);
@@ -35,6 +31,17 @@ const AllMovies = () => {
     draggable: true,
     theme: "colored",
   };
+
+  const searchValue = debounce((value) => {
+    const trimmedValue = value.trim();
+    if (trimmedValue.length > 0) {
+      searchMovieResult(trimmedValue);
+    }
+    if (trimmedValue.length === 0) {
+      setPageLength(2);
+      getPopularMovies();
+    }
+  }, 750);
 
   const getPopularMovies = async () => {
     const url = `https://api.themoviedb.org/3/discover/movie?api_key=${
@@ -62,6 +69,20 @@ const AllMovies = () => {
       });
       setdataLength(dataLength + 20);
       console.log(data);
+    } else {
+      console.log("Some error");
+    }
+  };
+
+  const searchMovieResult = async (movieName) => {
+    setMovieList([]);
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_MOVIE_DB_API_KEY}&query=${movieName}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (res.ok) {
+      setMovieList(data.results);
+      seMovieDataLength(data.results.length);
+      console.log(data.results);
     } else {
       console.log("Some error");
     }
@@ -140,11 +161,30 @@ const AllMovies = () => {
           className="bg-black absolute inset-0 bg-opacity-50 z-20"
         ></button>
       )}
-      <div className="px-6 md:px-12 pt-6">
-        <h2 className="font-semibold mb-4 text-2xl text-white">
-          Popular Movies
-        </h2>
-        <div className="w-full">
+      <div className="px-6 md:px-12 py-6">
+        <div className="flex flex-col xs:flex-row justify-between sm:items-center">
+          <h2 className="font-semibold mb-4 text-2xl text-white">
+            Popular Movies
+          </h2>
+          <div className="relative">
+            <input
+              className="search-input border border-white bg-transparent placeholder-white text-white outline-none px-2 py-2 text-sm rounded w-full xs:w-auto"
+              autoComplete="off"
+              type="text"
+              name=""
+              id="searchMovie"
+              required
+              onChange={(e) => searchValue(e.target.value)}
+            />
+            <label
+              className="search-label text-white absolute top-1.5 left-3 transition-all"
+              htmlFor="searchMovie"
+            >
+              search
+            </label>
+          </div>
+        </div>
+        <div className="w-full mt-5">
           <InfiniteScroll
             scrollableTarget="scrollableDiv"
             className="w-full grid grid-cols-sm sm:grid-cols-md lg:grid-cols-lg xl:grid-cols-xl gap-6 xs:gap-10 justify-center"
@@ -158,7 +198,7 @@ const AllMovies = () => {
                 <Card
                   bookmarkid={id}
                   {...list}
-                    bookmark={bookmark}
+                  bookmark={bookmark}
                   type={"movie"}
                   playVideo={playVideo}
                 />

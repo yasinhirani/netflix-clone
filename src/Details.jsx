@@ -55,7 +55,7 @@ const Details = () => {
 
   return (
     <div className="flex-grow overflow-y-auto">
-      <div className="px-6 md:px-12 pt-6 w-full xl:w-[1360px] mx-auto">
+      <div className="px-6 md:px-12 py-6 w-full xl:w-[1360px] mx-auto">
         <div className="flex flex-col md:flex-row md:items-start space-x-0 md:space-x-20 space-y-10 md:space-y-0">
           <figure className="w-full md:w-[500px] rounded-md shadow-xl overflow-hidden">
             <img
